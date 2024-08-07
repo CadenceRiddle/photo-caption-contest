@@ -1,0 +1,16 @@
+{
+  "name": "photo_caption_contest",
+  "version": "1.0.0",
+  "description": "Project for codecademy Photo Caption Contest project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3"
+  }
+}
