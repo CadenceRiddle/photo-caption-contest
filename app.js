@@ -55,6 +55,30 @@ app.get('/user/:username', async (req, res, next) => {
   };
 });
 
+// Delete User
+
+app.delete('/user/:username', async (req, res, next)=>{
+  try{
+    const username = req.params.username;
+    const target = await User.findOne({
+      where: {
+        username
+      }
+    });
+
+    if(target){
+      await target.destroy();
+      res.status(200).json({message: "user deleted successfully"});
+    }
+    else(
+      res.status(404).json({error: "user not found"})
+    );
+  }
+  catch(err){
+    res.status(400).json({error: err.message});
+  };
+})
+
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
