@@ -1,60 +1,31 @@
 const express = require('express');
 const app = express();
 const PORT = 3000;
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('photo-caption-contest', 'postgres', 'Ga11ego$0908', {
-  dialect: 'postgres'
-});
+const { User, Photo } = require('./sequelize');
+app.use(express.json());
 
-sequelize.authenticate().then(() => {
-  console.log('Connected successfully to database')
-}).catch((err) =>{
-  console.log('did  not connect')
-})
-
-const User = sequelize.define('user', {
-  username: {
-    type: Sequelize.DataTypes.STRING,
-    allowNull: false
-  },
-  password: {
-    type: Sequelize.DataTypes.STRING
-  },
-  age: {
-    type: Sequelize.DataTypes.INTEGER,
-    defaultValue: 21
+//Create photo
+app.post('/photo', async(req, res, next) => {
+  try {
+    const newPhoto = await Photo.create(req.body);
+    res.status(201).json(newPhoto);
   }
+  catch (err) {
+    res.status(400).json({error: err.message});
+  };
 });
 
-const Photo = sequelize.define('photo', {
-  username: {
-    type: Sequelize.DataTypes.STRING,
-    allowNull: false
-  },
-  picture: {
-    type: Sequelize.DataTypes.BLOB('long'),
-    allowNull: false,
-  },
-  description: {
-    type: Sequelize.DataTypes.STRING,
-    allowNull: false
+// create user
+app.post('/user', async(req, res, next) => {
+  try {
+    const newUser = await User.create(req.body);
+    res.status(201).json(newUser);
   }
-})
-
-User.sync()
-  .then(() => {
-    console.log('User model synced successfully');
-  })
-  .catch((err) => {
-    console.log('Failed to sync the user model');
-  });
-
-Photo.sync().then(() => {
-  console.log('Photo model synced successfully')
-}).catch((err) => {
-  console.log('Failed to sync to photo model')
+  catch (err) {
+    res.status(400).json({error: err.message});
+  };
 });
 
-app.listen(PORT, () =>{
-  console.log(`listening on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
 });
