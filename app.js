@@ -2,15 +2,35 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 const { User, Photo } = require('./sequelize');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage});
 app.use(express.json());
 
 // Create photo
-app.post('/photo', async (req, res, next) => {
+app.post('/photo', upload.single('picture'), async (req, res, next) => {
   try {
-    const newPhoto = await Photo.create(req.body);
+    const { username, description } = req.body;
+    const picture = req.file.buffer;
+    const newPhoto = await Photo.create({
+      username,
+      picture,
+      description
+    })
     res.status(201).json(newPhoto);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({error: err.message});
+  }
+});
+
+// Get all photos
+app.get('/photos', async(req, res, next) => {
+  try{
+    const photos = await Photo.findAll();
+    res.status(200).json(photos);
+  }
+  catch(err){
+    res.status(400).json({error: err.message});
   }
 });
 
