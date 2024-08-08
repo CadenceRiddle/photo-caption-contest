@@ -26,13 +26,34 @@ const User = sequelize.define('user', {
   }
 });
 
+const Photo = sequelize.define('photo', {
+  username: {
+    type: Sequelize.DataTypes.STRING,
+    allowNull: false
+  },
+  picture: {
+    type: Sequelize.DataTypes.BLOB('long'),
+    allowNull: false,
+  },
+  description: {
+    type: Sequelize.DataTypes.STRING,
+    allowNull: false
+  }
+})
+
 User.sync()
   .then(() => {
-    console.log('Table and model synced successfully');
+    console.log('User model synced successfully');
   })
   .catch((err) => {
-    console.error('Failed to sync the model:', err);
+    console.log('Failed to sync the user model');
   });
+
+Photo.sync().then(() => {
+  console.log('Photo model synced successfully')
+}).catch((err) => {
+  console.log('Failed to sync to photo model')
+});
 
 app.listen(PORT, () =>{
   console.log(`listening on port ${PORT}`);
