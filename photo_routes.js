@@ -7,13 +7,21 @@ const upload = multer({ storage: storage });
 
 router.use(express.json());
 
+const isAuthenticated = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    return next();
+  } else {
+    return res.status(401).json({ error: 'You must be logged in to perform this action' });
+  }
+};
+
 // Create photo
-router.post('/photo', upload.single('picture'), async (req, res, next) => {
+router.post('/photo', upload.single('picture'), isAuthenticated, async (req, res, next) => {
   try {
     const { username, description } = req.body;
     const picture = req.file.buffer;
     const newPhoto = await Photo.create({
-      username,
+      username: req.session.username,
       picture,
       description,
     });
@@ -73,13 +81,14 @@ router.get('/photo/id/:id', async (req, res, next) => {
 });
 
 // Update the description on a photo
-router.put('/photo/:id', async (req, res, next) => {
+router.put('/photo/:id',isAuthenticated, async (req, res, next) => {
   try {
     const id = req.params.id;
     const { description } = req.body;
     const target = await Photo.findOne({
       where: {
         id,
+        username: req.session.username
       },
     });
     if (target) {

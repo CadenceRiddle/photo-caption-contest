@@ -79,6 +79,11 @@ router.post('/login', async (req, res, next) => {
     }
 
     const token = jwt.sign({ username: user.username }, jwtSecret, { expiresIn: '1h'});
+
+        // Create session
+    req.session.userId = user.id;
+    req.session.username = user.username;
+
     res.status(200).json({message: "login successful", token});
   }
   catch(err){
@@ -87,7 +92,11 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.post('/logout', async (req, res, next) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to logout' });
+    }
   res.status(200).json({message: "logout successful"});
-})
+})});
 
 module.exports = router;
