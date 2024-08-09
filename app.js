@@ -34,6 +34,28 @@ app.get('/photos', async(req, res, next) => {
   }
 });
 
+// Get photos based on username
+app.get('/photo/:username', async(req, res, next) => {
+  try{
+    const username = req.params.username;
+    const target = await Photo.findAll({
+      where: {
+        username 
+      }
+    });
+
+    if(target){
+      res.status(200).json(target);
+    }
+    else(
+      res.status(404).json({error: "user not found"})
+    );
+  }
+  catch(err){
+    res.status(400).json({error: err.message});
+  }
+})
+
 // Create user
 app.post('/user', async (req, res, next) => {
   try {
