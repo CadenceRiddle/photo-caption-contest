@@ -94,6 +94,28 @@ app.put('/photo/:id', async (req, res, next) => {
   }
 });
 
+//delete photo 
+app.delete('/photo/id/:id', async (req, res, next) => {
+  try{
+    const id = req.params.id;
+    const target = await Photo.findOne({
+      where: {
+        id
+      }
+    });
+    if(target){
+      await target.destroy();
+      res.status(200).json({message: "photo deleted successfully"});
+    }
+    else{
+      res.status(404).json({error: "user not found"});
+    };
+  }
+  catch(err){
+    res.status(400).json({error: err.message});
+  }
+})
+
 // Create user
 app.post('/user', async (req, res, next) => {
   try {
