@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { Photo } = require('./sequelize');
 const multer = require('multer');
+const cache = require('./cache');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
@@ -34,6 +35,13 @@ router.post('/photo', upload.single('picture'), isAuthenticated, async (req, res
 // Get all photos
 router.get('/photos', async (req, res, next) => {
   try {
+
+    const cachedPhotos = cache.get('allPhotos');
+    if (cachedPhotos) {
+      console.log('Serving from cache');
+      return res.status(200).json(cachedPhotos);
+    };
+
     const photos = await Photo.findAll();
     res.status(200).json(photos);
   } catch (err) {
@@ -65,6 +73,13 @@ router.get('/photos/username/:username', async (req, res, next) => {
 router.get('/photo/id/:id', async (req, res, next) => {
   try {
     const id = req.params.id;
+
+    const cachedPhoto = cache.get(`photo_${id}`);
+    if (cachedPhoto) {
+      console.log('Serving from cache');
+      return res.status(200).json(cachedPhoto);
+    }
+
     const target = await Photo.findOne({
       where: {
         id,
@@ -94,6 +109,10 @@ router.put('/photo/:id',isAuthenticated, async (req, res, next) => {
     if (target) {
       target.description = description;
       await target.save();
+
+      cache.del('allPhotos'); // Invalidate the cache for all photos
+      cache.del(`photo_${id}`); // Invalidate the cache for this specific photo
+
       res.status(200).json(target);
     } else {
       res.status(404).json({ error: 'Photo not found' });
