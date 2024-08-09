@@ -56,6 +56,30 @@ app.get('/photo/:username', async(req, res, next) => {
   }
 })
 
+// Update the description on a photo
+app.put('/photo/:id', async (req, res, next) => {
+  try{
+    const id = req.params.id;
+    const { description } = req.body;
+    const target = await Photo.findOne({
+      where: {
+        id
+      }
+    })
+    if(target){
+      target.description = description;
+      await target.save();
+      res.status(200).json(target)
+    }
+    else{
+      res.status(404).json({error: 'user not found'});
+    }
+  }
+  catch(err){
+    res.status(400).json({error: err.message});
+  };
+})
+
 // Create user
 app.post('/user', async (req, res, next) => {
   try {
