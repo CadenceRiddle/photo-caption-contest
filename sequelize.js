@@ -1,7 +1,14 @@
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('photo-caption-contest', 'postgres', 'Ga11ego$0908', {
-  dialect: 'postgres'
-});
+require('dotenv').config(); // This loads the environment variables from the .env file
+
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
+    dialect: process.env.DB_DIALECT
+  }
+);
 
 sequelize.authenticate().then(() => {
   console.log('Connected successfully to database')
