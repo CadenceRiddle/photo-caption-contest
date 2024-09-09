@@ -1,1 +1,0 @@
-Project for codecademy Photo Caption Contest project
